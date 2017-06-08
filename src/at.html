@@ -1,0 +1,23 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="at.css">
+    <script src="vendor/requirejs/require.js"></script>
+    <script src="vendor/automizy-project-initializer/automizy-project-initializer.js"></script>
+    <script src="at.js"></script>
+    <script>
+
+        require([
+            "js/init/init"
+        ], function () {
+            $AT.init().ready(function () {
+                window.tagger = $AT.newTagger().drawTo('body')
+            })
+        });
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

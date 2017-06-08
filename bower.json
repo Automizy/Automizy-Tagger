@@ -1,0 +1,40 @@
+{
+  "name": "automizy-tagger",
+  "description": "Autmizy Tagger",
+  "keywords":[
+    "automizy-tagger",
+    "automizy"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "build",
+    "AUTHORS.txt",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "moduleType":[
+    "globals",
+    "amd"
+  ],
+  "main":[
+    "src/at.js",
+    "src/at.css"
+  ],
+  "authors":[
+    { "name": "Gyorgy Reti", "email": "gyorgy.reti@automizy.com" },
+    { "name": "Dominik Sagi", "email": "dominik.sagi@automizy.com" },
+    { "name": "Gabor Koncz", "email": "gabor.koncz@automizy.com" }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/automizy/automizy-tagger.git"
+  },
+  "dependencies": {
+    "jquery": "2.*",
+	"requirejs": "https://github.com/jrburke/requirejs.git#master",
+    "automizy-project-initializer": "*",
+    "jquery-ui":"1.*",
+	"fontawesome": "*"
+  }
+}
