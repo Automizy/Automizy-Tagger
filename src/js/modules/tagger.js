@@ -13,9 +13,10 @@ define([
 
             tags:[],
             unique:true,
+            changeFunction:function(){},
 
             mouseInEditor: false,
-            availableTags: [],
+            tagList: [],
             normalize: function (term) {
                 var ret = "";
                 for (var i = 0; i < term.length; i++) {
@@ -89,11 +90,8 @@ define([
             if (typeof obj.target !== 'undefined') {
                 t.drawTo(obj.target);
             }
-            if (typeof obj.tags !== 'undefined') {
-                t.tags(obj.tags);
-            }
-            if (typeof obj.availableTags !== 'undefined') {
-                t.availableTags(obj.availableTags);
+            if (typeof obj.tagList !== 'undefined') {
+                t.tagList(obj.tagList);
             }
             if (typeof obj.value !== 'undefined') {
                 t.val(obj.value);
@@ -136,6 +134,15 @@ define([
         }
         t.widget().appendTo(target);
         return t;
+    };
+    p.width = function (width) {
+        var t = this;
+        if (typeof width !== 'undefined') {
+            t.d.width = width;
+            t.widget().css('width', t.d.width);
+            return t;
+        }
+        return t.d.width;
     };
 
     p.change = function (changeFunction) {
@@ -182,21 +189,21 @@ define([
         }
         return t.d.unique;
     };
-    p.availableTags = function (availableTags) {
+    p.tagList = function (tagList) {
         var t = this;
-        if (typeof availableTags !== 'undefined') {
-            t.d.availableTags = availableTags;
+        if (typeof tagList !== 'undefined') {
+            t.d.tagList = tagList;
             return t;
         }
-        return t.d.availableTags;
+        return t.d.tagList;
     };
     p.activeTags = function () {
         var t = this;
         var activeTags = [];
         var value = t.val();
-        for(var i = 0; i < t.d.availableTags.length; i++){
-            if(value.indexOf(t.d.availableTags[i]) <= -1){
-                activeTags.push(t.d.availableTags[i]);
+        for(var i = 0; i < t.d.tagList.length; i++){
+            if(value.indexOf(t.d.tagList[i]) <= -1){
+                activeTags.push(t.d.tagList[i]);
             }
         }
         return activeTags;
@@ -208,6 +215,7 @@ define([
             tagger: t
         });
         t.d.tags.push(tag);
+        t.change();
         return t;
     };
     p.getTag = function (tagName) {
@@ -250,6 +258,7 @@ define([
             if(t.d.tags[i].val() === tagName){
                 t.d.tags[i].remove();
                 t.d.tags.splice(i, 1);
+                t.change();
                 return t;
             }
         }
@@ -261,6 +270,7 @@ define([
             t.d.tags[i].remove();
         }
         t.d.tags = [];
+        t.change();
         return t;
     };
     p.reset = function(){

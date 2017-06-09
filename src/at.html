@@ -11,7 +11,18 @@
             "js/init/init"
         ], function () {
             $AT.init().ready(function () {
-                window.tagger = $AT.newTagger().drawTo('body').availableTags(['Apple', 'Carrot', 'Pear', 'Banana', 'Onion', 'Melon'])
+                window.taggerAdd = $AT.newTagger({
+                    label:'Add tag to user',
+                    target:'body',
+                    tagList:['Apple', 'Carrot', 'Pear', 'Banana', 'Onion', 'Melon'],
+                    width:'50%'
+                });
+                window.taggerRemove = $AT.newTagger({
+                    label:'Remove tag from user',
+                    target:'body',
+                    tagList:['Apple', 'Carrot', 'Pear', 'Banana', 'Onion', 'Melon'],
+                    width:'50%'
+                });
             })
         });
 

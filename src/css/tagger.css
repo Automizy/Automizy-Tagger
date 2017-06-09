@@ -1,3 +1,9 @@
+.automizy-tagger{
+    width:100%;
+    display:inline-block;
+    box-sizing: border-box;
+    vertical-align: top;
+}
 .automizy-tagger-editor{
     border: 1px solid #dfe8f1;
     -webkit-box-shadow: inset 1px 1px 3px #f6f6f6;

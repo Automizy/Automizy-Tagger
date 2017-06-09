@@ -51,18 +51,41 @@ Now, init the module and create a new sidebar:
 <a name="Options"></a>
 ## Options
 
-### New Module
+### New Tagger
 
 #### Init parameters
 
 ```javascript
-//code
+var tagger = $AT.newTagger({
+     label:'Tag the user',
+     target:'body',
+     value:['Onion', 'Apple'],
+     tagList:['Apple', 'Carrot', 'Pear', 'Banana', 'Onion', 'Melon'],
+     width:'50%',
+     unique:true,
+     change:function(value){
+         console.log('tag list changed: ' + value);
+     }
+ })
 ```
 
 #### Dynamic functions
 
 ```javascript
-//code
+var tagger  = $AT.newTagger();
+tagger.label('Tag the user');               //get|set label
+tagger.drawTo('body');
+tagger.hide();
+tagger.show();
+tagger.width('50%');
+tagger.change(func);                        //run the change function OR set functions that call after change the tagger value
+tagger.val([/*list of tag names*/]);
+tagger.unique(true);                        //get|set available only unique values
+tagger.tagList([/*list of tag names*/]);    //get|set tags in the drop-down menu
+tagger.addTag('Apple');                     //add a new tag
+tagger.removeTag('Apple');                  //remove a tag
+tagger.removeAllTag();                      //remove all tag
+tagger.reset();                             //reset the tagger
 ```
 
 
@@ -70,7 +93,18 @@ Now, init the module and create a new sidebar:
 
 ```javascript
 $AT.init().ready(function () {
-    //code
+    var taggerAdd = $AT.newTagger({
+        label:'Add tag to user',
+        target:'body',
+        tagList:['Apple', 'Carrot', 'Pear', 'Banana', 'Onion', 'Melon'],
+        width:'50%'
+    });
+    var taggerRemove = $AT.newTagger({
+        label:'Remove tag from user',
+        target:'body',
+        tagList:['Apple', 'Carrot', 'Pear', 'Banana', 'Onion', 'Melon'],
+        width:'50%'
+    });
 })
 ```
 
