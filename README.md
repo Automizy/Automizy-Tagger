@@ -38,7 +38,7 @@ First, load [jQuery](http://jquery.com) (v2.2.4 or greater), [Automizy-Project-I
 <link href="vendor/automizy-tagger/automizy-tagger.min.css" rel="stylesheet" type="text/css">
 ```
 
-Now, init the module and create a new sidebar:
+Now, init the module and create a new tagger:
 
 ```html
 <script type="text/javascript">
