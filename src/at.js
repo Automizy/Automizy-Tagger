@@ -4,6 +4,7 @@ require([
     "js/init/initAccentMap",
 
     "js/modules/tagger",
+    "js/modules/tag",
 
     "js/elements/layout"
 

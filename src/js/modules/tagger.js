@@ -7,9 +7,12 @@ define([
 
             $widget: $('<div class="automizy-tagger"></div>'),
             $editor: $('<div class="automizy-tagger-editor"></div>'),
-            $tags: $('<div class="automizy-tagger-tags"></div>'),
+            $tags: $('<span class="automizy-tagger-tags"></span>'),
             $label: $('<label class="automizy-tagger-label"></label>'),
             $input: $('<input class="automizy-tagger-input" />'),
+
+            tags:[],
+            unique:true,
 
             mouseInEditor: false,
             availableTags: [],
@@ -26,14 +29,34 @@ define([
         t.d.$label.appendTo(t.d.$widget);
         t.d.$editor.appendTo(t.d.$widget);
         t.d.$tags.appendTo(t.d.$editor);
-        t.d.$input.appendTo(t.d.$editor).autocomplete({
+        t.d.$input.appendTo(t.d.$editor).click(function(){
+            t.d.$input.keydown();
+        }).autocomplete({
             source: function (request, response) {
                 var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-                response($.grep(t.d.availableTags, function (value) {
+                var grep = $.grep(t.activeTags(), function (value) {
                     value = value.label || value.value || value;
                     return matcher.test(value) || matcher.test(t.d.normalize(value));
-                }));
+                });
+                response(grep);
             },
+            open: function() {
+                t.widget().find("ul.ui-menu").width(t.d.$editor.innerWidth());
+            },
+            appendTo: t.d.$editor,
+            position: {
+                at:"left bottom",
+                of:t.d.$editor
+            },
+            select:function(event, data){
+                event.preventDefault();
+                if (event.which === 1) {
+                    if(!t.addTagFromInput(data.item.value)){
+                        t.d.$input.val('');
+                    }
+                }
+            },
+            delay:0,
             minLength:0
         });
 
@@ -50,19 +73,11 @@ define([
             if (!t.d.mouseInEditor) {
                 t.d.$input.val('');
             }
-        }).keydown(function (e) {
-            var keyCode = e.keyCode || e.which;
-            if (keyCode == 13 || keyCode == 9) {
-                e.preventDefault();
-                var value = t.d.$input.val();
-                if(value.length > 0) {
-                    $('<span></span>').html(value).appendTo(t.d.$tags);
-                    $AT.newTag({
-                        value: t.d.$input.val(),
-                        target: t.d.$tags
-                    });
-                    t.d.$input.val('');
-                }
+        }).keydown(function (event) {
+            var keyCode = parseInt(event.keyCode || event.which);
+            if (keyCode === 13 || keyCode === 9) {
+                event.preventDefault();
+                t.addTagFromInput(t.d.$input.val());
             }
         }).focus(function () {
             if(!t.d.$input.val().trim()) {
@@ -85,6 +100,9 @@ define([
             }
             if (typeof obj.width !== 'undefined') {
                 t.width(obj.width);
+            }
+            if (typeof obj.unique !== 'undefined') {
+                t.unique(obj.unique);
             }
             if (typeof obj.label !== 'undefined') {
                 t.label(obj.label);
@@ -129,14 +147,23 @@ define([
         t.d.changeFunction.apply(t, [t.val()]);
         return t;
     };
-    p.val = function (value) {
+    p.val = p.tags = function (tags) {
         var t = this;
-        if (typeof value !== 'undefined') {
-
+        if (typeof tags !== 'undefined') {
+            t.removeAllTag();
+            for(var i = 0; i < tags.length; i++){
+                t.addTag($AT.newTag({
+                    value: tags[i],
+                    tagger: t
+                }));
+            }
             return t;
         }
-        var value = [];
-        return value;
+        tags = [];
+        for(var i = 0; i < t.d.tags.length; i++){
+            tags.push(t.d.tags[i].val());
+        }
+        return tags;
     };
     p.label = function (label) {
         var t = this;
@@ -147,6 +174,14 @@ define([
         }
         return t.d.label;
     };
+    p.unique = function (unique) {
+        var t = this;
+        if (typeof unique !== 'undefined') {
+            t.d.unique = unique;
+            return t;
+        }
+        return t.d.unique;
+    };
     p.availableTags = function (availableTags) {
         var t = this;
         if (typeof availableTags !== 'undefined') {
@@ -154,6 +189,85 @@ define([
             return t;
         }
         return t.d.availableTags;
+    };
+    p.activeTags = function () {
+        var t = this;
+        var activeTags = [];
+        var value = t.val();
+        for(var i = 0; i < t.d.availableTags.length; i++){
+            if(value.indexOf(t.d.availableTags[i]) <= -1){
+                activeTags.push(t.d.availableTags[i]);
+            }
+        }
+        return activeTags;
+    };
+    p.addTag = function (tag) {
+        var t = this;
+        tag = tag || $AT.newTag({
+            value: t.d.$input.val(),
+            tagger: t
+        });
+        t.d.tags.push(tag);
+        return t;
+    };
+    p.getTag = function (tagName) {
+        var t = this;
+        for(var i = 0; i < t.d.tags.length; i++){
+            if(t.d.tags[i].val() === tagName){
+                return t.d.tags[i];
+            }
+        }
+        return false;
+    };
+    p.addTagFromInput = function (value) {
+        var t = this;
+        if(value.length > 0) {
+            if(t.unique()){
+                var tag = t.getTag(value);
+                if(tag !== false){
+                    tag.highlight();
+                    return false;
+                }
+                t.addTag($AT.newTag({
+                    value: value,
+                    tagger: t
+                }));
+                t.d.$input.val('');
+                return t;
+            }
+            t.addTag($AT.newTag({
+                value: value,
+                tagger: t
+            }));
+            t.d.$input.val('');
+            return t;
+        }
+        return false;
+    };
+    p.removeTag = function (tagName) {
+        var t = this;
+        for(var i = 0; i < t.d.tags.length; i++){
+            if(t.d.tags[i].val() === tagName){
+                t.d.tags[i].remove();
+                t.d.tags.splice(i, 1);
+                return t;
+            }
+        }
+        return t;
+    };
+    p.removeAllTag = function () {
+        var t = this;
+        for(var i = 0; i < t.d.tags.length; i++){
+            t.d.tags[i].remove();
+        }
+        t.d.tags = [];
+        return t;
+    };
+    p.reset = function(){
+        var t = this;
+        t.removeAllTag();
+        t.d.$input.val('');
+        return t;
     };
 
     $AT.newTagger = function (tagger) {
