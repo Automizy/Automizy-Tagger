@@ -25,6 +25,7 @@
     white-space: nowrap;
     display: inline-block;
     border: 1px solid #b9b9b9;
+    max-width: 100%;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
@@ -39,6 +40,11 @@
     vertical-align: middle;
     padding:5px;
     color:#555555;
+    overflow: hidden;
+    max-width: calc(100% - 56px);
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 .automizy-tagger-tag-close{
     opacity:0.5;
