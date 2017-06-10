@@ -5,7 +5,7 @@
     "automizy-tagger",
     "automizy"
   ],
-  "private": true,
+  "private": false,
   "ignore": [
     "**/.*",
     "build",
