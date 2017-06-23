@@ -797,14 +797,26 @@
                 });
                 response(grep);
             },
-            open: function() {
-                t.widget().find("ul.ui-menu").width(t.d.$editor.innerWidth()).css({
+            open: function(a, b) {
+                var $menu;
+                var autocompleteObject = t.d.$input.data('ui-autocomplete');
+                if(typeof autocompleteObject !== 'undefined' && typeof autocompleteObject.bindings !== 'undefined' && autocompleteObject.bindings instanceof jQuery){
+                    $menu = $(autocompleteObject.bindings[1]);
+                    if(!$menu.hasClass('ui-menu')){
+                        console.log('Tagger menu detect failed, but try an other solution. #1');
+                        $menu = $('body ul.ui-menu').eq(0);
+                    }
+                }else{
+                    console.log('Tagger menu detect failed, but try an other solution. #2');
+                    $menu = $('body ul.ui-menu').eq(0);
+                }
+                $menu.width(t.d.$editor.innerWidth()).css({
                     overflowY:'auto',
                     overflowX:'hidden',
                     height:'200px'
                 });
             },
-            appendTo: t.d.$editor,
+            appendTo: 'body',
             position: {
                 at:"left bottom",
                 of:t.d.$editor
