@@ -58,6 +58,7 @@ Now, init the module and create a new tagger:
 ```javascript
 var tagger = $AT.newTagger({
      label:'Tag the user',
+     placeholder:'Enter tags...',
      target:'body',
      value:['Onion', 'Apple'],
      tagList:['Apple', 'Carrot', 'Pear', 'Banana', 'Onion', 'Melon'],
@@ -74,6 +75,7 @@ var tagger = $AT.newTagger({
 ```javascript
 var tagger  = $AT.newTagger();
 tagger.label('Tag the user');               //get|set label
+tagger.placeholder('Enter tags...');        //get|set placeholder
 tagger.drawTo('body');
 tagger.hide();
 tagger.show();

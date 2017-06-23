@@ -15,6 +15,8 @@ define([
             unique:true,
             changeFunction:function(){},
 
+            placeholder:'',
+
             mouseInEditor: false,
             tagList: [],
             normalize: function (term) {
@@ -42,7 +44,11 @@ define([
                 response(grep);
             },
             open: function() {
-                t.widget().find("ul.ui-menu").width(t.d.$editor.innerWidth());
+                t.widget().find("ul.ui-menu").width(t.d.$editor.innerWidth()).css({
+                    overflowY:'auto',
+                    overflowX:'hidden',
+                    height:'200px'
+                });
             },
             appendTo: t.d.$editor,
             position: {
@@ -104,6 +110,9 @@ define([
             }
             if (typeof obj.label !== 'undefined') {
                 t.label(obj.label);
+            }
+            if (typeof obj.placeholder !== 'undefined') {
+                t.placeholder(obj.placeholder);
             }
             if (typeof obj.change === 'function') {
                 t.change(obj.change);
@@ -180,6 +189,15 @@ define([
             return t;
         }
         return t.d.label;
+    };
+    p.placeholder = function (placeholder) {
+        var t = this;
+        if (typeof placeholder !== 'undefined') {
+            t.d.placeholder = placeholder;
+            t.d.$input.attr('placeholder', t.d.placeholder);
+            return t;
+        }
+        return t.d.placeholder;
     };
     p.unique = function (unique) {
         var t = this;
