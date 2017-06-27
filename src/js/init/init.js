@@ -21,14 +21,6 @@ define([], function () {
                 name: 'fontawesome',
                 skipCondition: hasFont('fa', 'FontAwesome'),
                 css: "vendor/fontawesome/css/font-awesome.min.css"
-            },
-            {
-                name: 'jquery-ui',
-                skipCondition: function(){return typeof jQuery.ui !== 'undefined'},
-                js: "vendor/jquery-ui/jquery-ui.js",
-                css:[
-                    "vendor/jquery-ui/themes/base/jquery-ui.css"
-                ]
             }
         ]
     });

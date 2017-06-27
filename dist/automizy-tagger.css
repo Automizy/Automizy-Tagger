@@ -19,6 +19,32 @@
 .automizy-tagger-input{
     border:none;
     outline:none;
+    height: 38px;
+}
+.automizy-tagger-tag-list{
+    position: absolute;
+    z-index:99999;
+    box-sizing: border-box;
+    border: 1px solid #c5c5c5;
+    background: #ffffff;
+    color: #333333;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 200px;
+}
+.automizy-tagger-tag-list-element{
+    cursor: pointer;
+    box-sizing: border-box;
+    width:100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    padding:6px;
+}
+.automizy-tagger-tag-list-element:hover{
+    background-color: rgb( 244,106,31 );
+    color: #FFFFFF;
 }
 .automizy-tagger-tag{
     margin: 0 8px 4px 0;

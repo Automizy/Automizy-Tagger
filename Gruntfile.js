@@ -63,8 +63,6 @@ module.exports = function (grunt) {
 				files: [
                     {expand: true, cwd: '.bower/automizy-project-initializer/dist/', src: '**/*', dest: 'src/vendor/automizy-project-initializer'},
 					{expand: true, cwd: '.bower/jquery/dist/', src: 'jquery.min.*', dest: 'src/vendor/jquery'},
-                    {expand: true, cwd: '.bower/jquery-ui/', src: 'jquery-ui.*', dest: 'src/vendor/jquery-ui'},
-                    {expand: true, cwd: '.bower/jquery-ui/themes/', src: '**/*', dest: 'src/vendor/jquery-ui/themes'},
 					{expand: true, cwd: '.bower/requirejs/', src: 'require.js', dest: 'src/vendor/requirejs'},
 					{expand: true, cwd: '.bower/fontawesome/css', src: '**/*', dest: 'src/vendor/fontawesome/css'},
 					{expand: true, cwd: '.bower/fontawesome/fonts', src: '**/*', dest: 'src/vendor/fontawesome/fonts'}

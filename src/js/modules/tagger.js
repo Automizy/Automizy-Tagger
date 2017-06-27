@@ -5,20 +5,24 @@ define([
         var t = this;
         t.d = {
 
-            $widget: $('<div class="automizy-tagger"></div>'),
+            $widget: $('<div class="automizy-tagger"></div>').click(function () {
+                t.d.$input.keyup();
+            }),
             $editor: $('<div class="automizy-tagger-editor"></div>'),
             $tags: $('<span class="automizy-tagger-tags"></span>'),
+            $tagList: $('<div class="automizy-tagger-tag-list"></div>').appendTo('body').hide(),
             $label: $('<label class="automizy-tagger-label"></label>'),
             $input: $('<input class="automizy-tagger-input" />'),
 
-            tags:[],
-            unique:true,
-            changeFunction:function(){},
+            tags: [],
+            unique: true,
+            changeFunction: function () {},
 
-            placeholder:'',
+            placeholder: '',
 
             mouseInEditor: false,
             tagList: [],
+            tagListElements: {},
             normalize: function (term) {
                 var ret = "";
                 for (var i = 0; i < term.length; i++) {
@@ -32,51 +36,11 @@ define([
         t.d.$label.appendTo(t.d.$widget);
         t.d.$editor.appendTo(t.d.$widget);
         t.d.$tags.appendTo(t.d.$editor);
-        t.d.$input.appendTo(t.d.$editor).click(function(){
-            t.d.$input.keydown();
-        }).autocomplete({
-            source: function (request, response) {
-                var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-                var grep = $.grep(t.activeTags(), function (value) {
-                    value = value.label || value.value || value;
-                    return matcher.test(value) || matcher.test(t.d.normalize(value));
-                });
-                response(grep);
-            },
-            open: function(a, b) {
-                var $menu;
-                var autocompleteObject = t.d.$input.data('ui-autocomplete');
-                if(typeof autocompleteObject !== 'undefined' && typeof autocompleteObject.bindings !== 'undefined' && autocompleteObject.bindings instanceof jQuery){
-                    $menu = $(autocompleteObject.bindings[1]);
-                    if(!$menu.hasClass('ui-menu')){
-                        console.log('Tagger menu detect failed, but try an other solution. #1');
-                        $menu = $('body ul.ui-menu').eq(0);
-                    }
-                }else{
-                    console.log('Tagger menu detect failed, but try an other solution. #2');
-                    $menu = $('body ul.ui-menu').eq(0);
-                }
-                $menu.width(t.d.$editor.innerWidth()).css({
-                    overflowY:'auto',
-                    overflowX:'hidden',
-                    height:'200px'
-                });
-            },
-            appendTo: 'body',
-            position: {
-                at:"left bottom",
-                of:t.d.$editor
-            },
-            select:function(event, data){
-                event.preventDefault();
-                if (event.which === 1) {
-                    if(!t.addTagFromInput(data.item.value)){
-                        t.d.$input.val('');
-                    }
-                }
-            },
-            delay:0,
-            minLength:0
+        t.d.$input.appendTo(t.d.$editor).keyup(function () {
+            t.filter();
+            t.showTagListBox();
+        }).blur(function () {
+            t.d.$tagList.hide();
         });
 
         t.d.$editor.mouseenter(function () {
@@ -99,7 +63,7 @@ define([
                 t.addTagFromInput(t.d.$input.val());
             }
         }).focus(function () {
-            if(!t.d.$input.val().trim()) {
+            if (!t.d.$input.val().trim()) {
                 t.d.$input.keydown();
             }
         });
@@ -166,6 +130,40 @@ define([
         return t.d.width;
     };
 
+    p.filter = function (value) {
+        var t = this;
+
+        value = (value || t.d.$input.val()).replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
+        var matcher = new RegExp(value, "i");
+        var grep = $.grep(t.activeTags(), function (value) {
+            return matcher.test(value) || matcher.test(t.d.normalize(value));
+        });
+        for (var i in t.d.tagListElements) {
+            t.d.tagListElements[i].hide();
+        }
+        for (var i = 0; i < grep.length; i++) {
+            t.d.tagListElements[grep[i]].show();
+        }
+
+        return t;
+    };
+
+    p.showTagListBox = function () {
+        var t = this;
+
+        var targetOffset = t.d.$widget.offset();
+        var targetOffsetTop = targetOffset.top;
+        var targetOffsetLeft = targetOffset.left;
+        var targetHeight = t.d.$widget.height();
+        t.d.$tagList.css({
+            bottom: 'auto',
+            left: targetOffsetLeft + 'px',
+            top: (targetOffsetTop + targetHeight) + 'px'
+        }).width(t.d.$editor.innerWidth()).show();
+
+        return t;
+    };
+
     p.change = function (changeFunction) {
         var t = this;
         if (typeof changeFunction === 'function') {
@@ -179,7 +177,7 @@ define([
         var t = this;
         if (typeof tags !== 'undefined') {
             t.removeAllTag();
-            for(var i = 0; i < tags.length; i++){
+            for (var i = 0; i < tags.length; i++) {
                 t.addTag($AT.newTag({
                     value: tags[i],
                     tagger: t
@@ -188,7 +186,7 @@ define([
             return t;
         }
         tags = [];
-        for(var i = 0; i < t.d.tags.length; i++){
+        for (var i = 0; i < t.d.tags.length; i++) {
             tags.push(t.d.tags[i].val());
         }
         return tags;
@@ -223,6 +221,21 @@ define([
         var t = this;
         if (typeof tagList !== 'undefined') {
             t.d.tagList = tagList;
+            t.d.$tagList.empty();
+            t.d.tagListElements = {};
+            for (var i = 0; i < t.d.tagList.length; i++) {
+                t.d.tagListElements[t.d.tagList[i]] = $('<div class="automizy-tagger-tag-list-element"></div>').data('automizy-value', t.d.tagList[i]).appendTo(t.d.$tagList).text(t.d.tagList[i]).mousedown(function (event) {
+                    event.preventDefault();
+                }).click(function (event) {
+                    event.preventDefault();
+                    if (event.which === 1) {
+                        if (!t.addTagFromInput($(this).data('automizy-value'))) {
+                            t.d.$input.val('');
+                        }
+                    }
+                    t.filter();
+                });
+            }
             return t;
         }
         return t.d.tagList;
@@ -231,8 +244,8 @@ define([
         var t = this;
         var activeTags = [];
         var value = t.val();
-        for(var i = 0; i < t.d.tagList.length; i++){
-            if(value.indexOf(t.d.tagList[i]) <= -1){
+        for (var i = 0; i < t.d.tagList.length; i++) {
+            if (value.indexOf(t.d.tagList[i]) <= -1) {
                 activeTags.push(t.d.tagList[i]);
             }
         }
@@ -241,17 +254,17 @@ define([
     p.addTag = function (tag) {
         var t = this;
         tag = tag || $AT.newTag({
-            value: t.d.$input.val(),
-            tagger: t
-        });
+                value: t.d.$input.val(),
+                tagger: t
+            });
         t.d.tags.push(tag);
         t.change();
         return t;
     };
     p.getTag = function (tagName) {
         var t = this;
-        for(var i = 0; i < t.d.tags.length; i++){
-            if(t.d.tags[i].val() === tagName){
+        for (var i = 0; i < t.d.tags.length; i++) {
+            if (t.d.tags[i].val() === tagName) {
                 return t.d.tags[i];
             }
         }
@@ -259,10 +272,10 @@ define([
     };
     p.addTagFromInput = function (value) {
         var t = this;
-        if(value.length > 0) {
-            if(t.unique()){
+        if (value.length > 0) {
+            if (t.unique()) {
                 var tag = t.getTag(value);
-                if(tag !== false){
+                if (tag !== false) {
                     tag.highlight();
                     return false;
                 }
@@ -284,8 +297,8 @@ define([
     };
     p.removeTag = function (tagName) {
         var t = this;
-        for(var i = 0; i < t.d.tags.length; i++){
-            if(t.d.tags[i].val() === tagName){
+        for (var i = 0; i < t.d.tags.length; i++) {
+            if (t.d.tags[i].val() === tagName) {
                 t.d.tags[i].remove();
                 t.d.tags.splice(i, 1);
                 t.change();
@@ -296,14 +309,14 @@ define([
     };
     p.removeAllTag = function () {
         var t = this;
-        for(var i = 0; i < t.d.tags.length; i++){
+        for (var i = 0; i < t.d.tags.length; i++) {
             t.d.tags[i].remove();
         }
         t.d.tags = [];
         t.change();
         return t;
     };
-    p.reset = function(){
+    p.reset = function () {
         var t = this;
         t.removeAllTag();
         t.d.$input.val('');
