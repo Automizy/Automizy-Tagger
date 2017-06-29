@@ -26,7 +26,15 @@
                 window.taggerGeneral = $AT.newTagger({
                     target:'body',
                     tagList:['Apple', 'Carrot', 'Pear', 'Banana', 'Onion', 'Melon', 'Grapefruit', 'Coconut', 'Szőrös Űrlény'],
-                    placeholder:'Enter tags...'
+                    placeholder:'Enter tags...',
+                    change:function(tags, addedTag, removedTag){
+                        if(addedTag !== false){
+                            console.log(addedTag + ' added.');
+                        }
+                        if(removedTag !== false){
+                            console.log(removedTag + ' removed.');
+                        }
+                    }
                 });
             })
         });

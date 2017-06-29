@@ -761,6 +761,8 @@
             $input: $('<input class="automizy-tagger-input" />'),
 
             tags: [],
+            addedTag:false,
+            removedTag:false,
             unique: true,
             changeFunction: function () {},
 
@@ -916,7 +918,9 @@
             t.d.changeFunction = changeFunction;
             return t;
         }
-        t.d.changeFunction.apply(t, [t.val()]);
+        t.d.changeFunction.apply(t, [t.val(), t.d.addedTag, t.d.removedTag]);
+        t.d.addedTag = false;
+        t.d.removedTag = false;
         return t;
     };
     p.val = p.tags = function (tags) {
@@ -1004,6 +1008,7 @@
                 tagger: t
             });
         t.d.tags.push(tag);
+        t.d.addedTag = tag.val();
         t.change();
         return t;
     };
@@ -1045,6 +1050,7 @@
         var t = this;
         for (var i = 0; i < t.d.tags.length; i++) {
             if (t.d.tags[i].val() === tagName) {
+                t.d.removedTag = t.d.tags[i].val();
                 t.d.tags[i].remove();
                 t.d.tags.splice(i, 1);
                 t.change();

@@ -7,6 +7,7 @@
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     border-radius: 10px;
+    font-size: 16px;
 }
 .automizy-tagger-tag-icon{
     color:#b9b9b9;
@@ -14,7 +15,6 @@
     padding:5px;
 }
 .automizy-tagger-tag-content{
-    font-size: 16px;
     vertical-align: middle;
     padding:5px;
     color:#555555;
