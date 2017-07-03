@@ -970,25 +970,35 @@
     p.tagList = function (tagList) {
         var t = this;
         if (typeof tagList !== 'undefined') {
-            t.d.tagList = tagList;
+            t.d.tagList = [];
             t.d.$tagList.empty();
             t.d.tagListElements = {};
-            for (var i = 0; i < t.d.tagList.length; i++) {
-                t.d.tagListElements[t.d.tagList[i]] = $('<div class="automizy-tagger-tag-list-element"></div>').data('automizy-value', t.d.tagList[i]).appendTo(t.d.$tagList).text(t.d.tagList[i]).mousedown(function (event) {
-                    event.preventDefault();
-                }).click(function (event) {
-                    event.preventDefault();
-                    if (event.which === 1) {
-                        if (!t.addTagFromInput($(this).data('automizy-value'))) {
-                            t.d.$input.val('');
-                        }
-                    }
-                    t.filter();
-                });
+            for (var i = 0; i < tagList.length; i++) {
+                t.addTagToTheList(tagList[i]);
             }
             return t;
         }
         return t.d.tagList;
+    };
+    p.addTagToTheList = function (tag) {
+        var t = this;
+        tag = tag || false;
+        if(tag === false){
+            return t;
+        }
+        t.d.tagList.push(tag);
+        t.d.tagListElements[tag] = $('<div class="automizy-tagger-tag-list-element"></div>').data('automizy-value', tag).appendTo(t.d.$tagList).text(tag).mousedown(function (event) {
+            event.preventDefault();
+        }).click(function (event) {
+            event.preventDefault();
+            if (event.which === 1) {
+                if (!t.addTagFromInput($(this).data('automizy-value'))) {
+                    t.d.$input.val('');
+                }
+            }
+            t.filter();
+        });
+        return t;
     };
     p.activeTags = function () {
         var t = this;
