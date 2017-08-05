@@ -764,6 +764,7 @@
             addedTag:false,
             removedTag:false,
             unique: true,
+            type:'normal',
             changeFunction: function () {},
 
             placeholder: '',
@@ -841,6 +842,9 @@
             if (typeof obj.change === 'function') {
                 t.change(obj.change);
             }
+            if (typeof obj.type !== 'undefined') {
+                t.type(obj.type);
+            }
         }
 
     };
@@ -876,6 +880,16 @@
             return t;
         }
         return t.d.width;
+    };
+
+    p.type = function(type){
+        var t = this;
+        if (typeof type !== 'undefined') {
+            t.d.type = type;
+            t.widget().addClass('automizy-tagger-skin-' + t.d.type);
+            return t;
+        }
+        return t.d.type;
     };
 
     p.filter = function (value) {

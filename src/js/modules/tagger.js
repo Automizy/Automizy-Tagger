@@ -18,6 +18,7 @@ define([
             addedTag:false,
             removedTag:false,
             unique: true,
+            type:'normal',
             changeFunction: function () {},
 
             placeholder: '',
@@ -95,6 +96,9 @@ define([
             if (typeof obj.change === 'function') {
                 t.change(obj.change);
             }
+            if (typeof obj.type !== 'undefined') {
+                t.type(obj.type);
+            }
         }
 
     };
@@ -130,6 +134,23 @@ define([
             return t;
         }
         return t.d.width;
+    };
+
+    p.type = function(type){
+        var t = this;
+        if (typeof type !== 'undefined') {
+            t.d.type = type;
+            t.widget().addClass('automizy-tagger-skin-' + t.d.type);
+            t.d.$input.on('paste', function () {
+                var element = this;
+                setTimeout(function () {
+                    var text = $(element).val();
+                    console.log(text);
+                }, 100);
+            });
+            return t;
+        }
+        return t.d.type;
     };
 
     p.filter = function (value) {

@@ -82,3 +82,36 @@
 .automizy-tagger-tag-close:hover{
     opacity:1;
 }
+.automizy-tagger.automizy-tagger-skin-email .automizy-tagger-editor{
+    padding:0;
+}
+.automizy-tagger.automizy-tagger-skin-email .automizy-tagger-input{
+    height: auto;
+    padding: 0;
+    margin: 8px 5px 10px 5px;
+    vertical-align: top;
+}
+.automizy-tagger.automizy-tagger-skin-email .automizy-tagger-tag{
+    margin:0;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.automizy-tagger.automizy-tagger-skin-email .automizy-tagger-tag{
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    border-color:#dcdcdc;
+    font-size:14px;
+    margin: 4px 4px 0 4px;
+}
+.automizy-tagger.automizy-tagger-skin-email .automizy-tagger-tag .automizy-tagger-tag-icon{
+    display: none;
+}
+.automizy-tagger.automizy-tagger-skin-email .automizy-tagger-tag .automizy-tagger-tag-content{
+    max-width: calc(100% - 24px);
+    padding: 2px 5px 2px 5px;
+}
+.automizy-tagger.automizy-tagger-skin-email .automizy-tagger-tag .automizy-tagger-tag-close{
+    padding: 3px 6px 4px 5px;
+}
