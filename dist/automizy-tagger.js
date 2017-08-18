@@ -747,6 +747,15 @@
 })();
 
 (function(){
+
+    $AT.validateEmail = function (email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
+
+})();
+
+(function(){
     $AT.modules.Tagger = function (obj) {
         var t = this;
         t.d = {
@@ -809,7 +818,11 @@
             var keyCode = parseInt(event.keyCode || event.which);
             if (keyCode === 13 || keyCode === 9) {
                 event.preventDefault();
-                t.addTagFromInput(t.d.$input.val());
+                var value = t.d.$input.val();
+                if(t.type() === 'email' && !$AT.validateEmail(value)){
+                    return false;
+                }
+                t.addTagFromInput(value);
             }
         }).focus(function () {
             if (!t.d.$input.val().trim()) {
@@ -887,6 +900,13 @@
         if (typeof type !== 'undefined') {
             t.d.type = type;
             t.widget().addClass('automizy-tagger-skin-' + t.d.type);
+            t.d.$input.on('paste', function () {
+                var element = this;
+                setTimeout(function () {
+                    var text = $(element).val();
+                    console.log(text);
+                }, 100);
+            });
             return t;
         }
         return t.d.type;

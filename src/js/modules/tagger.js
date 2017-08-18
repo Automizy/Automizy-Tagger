@@ -63,7 +63,11 @@ define([
             var keyCode = parseInt(event.keyCode || event.which);
             if (keyCode === 13 || keyCode === 9) {
                 event.preventDefault();
-                t.addTagFromInput(t.d.$input.val());
+                var value = t.d.$input.val();
+                if(t.type() === 'email' && !$AT.validateEmail(value)){
+                    return false;
+                }
+                t.addTagFromInput(value);
             }
         }).focus(function () {
             if (!t.d.$input.val().trim()) {
