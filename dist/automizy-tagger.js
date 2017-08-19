@@ -770,10 +770,11 @@
             $input: $('<input class="automizy-tagger-input" />'),
 
             tags: [],
-            addedTag:false,
-            removedTag:false,
+            addedTag: false,
+            removedTag: false,
             unique: true,
-            type:'normal',
+            type: 'normal',
+            maxLength: Number.MAX_VALUE,
             changeFunction: function () {},
 
             placeholder: '',
@@ -819,7 +820,7 @@
             if (keyCode === 13 || keyCode === 9) {
                 event.preventDefault();
                 var value = t.d.$input.val();
-                if(t.type() === 'email' && !$AT.validateEmail(value)){
+                if (t.type() === 'email' && !$AT.validateEmail(value)) {
                     return false;
                 }
                 t.addTagFromInput(value);
@@ -845,6 +846,9 @@
             }
             if (typeof obj.unique !== 'undefined') {
                 t.unique(obj.unique);
+            }
+            if (typeof obj.maxLength !== 'undefined') {
+                t.maxLength(obj.maxLength);
             }
             if (typeof obj.label !== 'undefined') {
                 t.label(obj.label);
@@ -895,7 +899,7 @@
         return t.d.width;
     };
 
-    p.type = function(type){
+    p.type = function (type) {
         var t = this;
         if (typeof type !== 'undefined') {
             t.d.type = type;
@@ -903,8 +907,17 @@
             t.d.$input.on('paste', function () {
                 var element = this;
                 setTimeout(function () {
-                    var text = $(element).val();
-                    console.log(text);
+                    if(t.type() === 'email') {
+                        var emailsText = $(element).val();
+                        var re = new RegExp(/[<>,; \t]/, 'gi');
+                        var parsedText = emailsText.replace(re, ' ');
+                        var splittedText = parsedText.split(' ');
+                        for (var i = 0; i < splittedText.length; i++) {
+                            if ($AT.validateEmail(splittedText[i])) {
+                                t.addTagFromInput(splittedText[i]);
+                            }
+                        }
+                    }
                 }, 100);
             });
             return t;
@@ -1001,6 +1014,24 @@
         }
         return t.d.unique;
     };
+    p.maxLength = function (maxLength) {
+        var t = this;
+        if (typeof maxLength !== 'undefined') {
+            t.d.maxLength = parseInt(maxLength);
+            return t;
+        }
+        return t.d.maxLength;
+    };
+    p.checkMaxLength = function(){
+        var t = this;
+        if(t.d.tags.length >= t.maxLength()){
+            for (var i = 0; i < t.d.tags.length; i++) {
+                t.d.tags[i].highlight();
+            }
+            return false;
+        }
+        return true;
+    };
     p.tagList = function (tagList) {
         var t = this;
         if (typeof tagList !== 'undefined') {
@@ -1010,6 +1041,7 @@
             for (var i = 0; i < tagList.length; i++) {
                 t.addTagToTheList(tagList[i]);
             }
+            t.filter();
             return t;
         }
         return t.d.tagList;
@@ -1017,7 +1049,7 @@
     p.addTagToTheList = function (tag) {
         var t = this;
         tag = tag || false;
-        if(tag === false){
+        if (tag === false) {
             return t;
         }
         t.d.tagList.push(tag);
@@ -1047,10 +1079,13 @@
     };
     p.addTag = function (tag) {
         var t = this;
+        if(!t.checkMaxLength()){
+            return t;
+        }
         tag = tag || $AT.newTag({
-                value: t.d.$input.val(),
-                tagger: t
-            });
+            value: t.d.$input.val(),
+            tagger: t
+        });
         t.d.tags.push(tag);
         t.d.addedTag = tag.val();
         t.change();
@@ -1068,6 +1103,9 @@
     p.addTagFromInput = function (value) {
         var t = this;
         if (value.length > 0) {
+            if(!t.checkMaxLength()){
+                return t;
+            }
             if (t.unique()) {
                 var tag = t.getTag(value);
                 if (tag !== false) {
